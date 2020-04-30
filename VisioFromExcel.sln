@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisioFromExcel", "VisioFromExcel\VisioFromExcel.csproj", "{A74CFF25-6532-46F7-B4D0-ABE6B75362BA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A74CFF25-6532-46F7-B4D0-ABE6B75362BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A74CFF25-6532-46F7-B4D0-ABE6B75362BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A74CFF25-6532-46F7-B4D0-ABE6B75362BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A74CFF25-6532-46F7-B4D0-ABE6B75362BA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F41ED6A1-D299-4B44-81EE-A6C3F750FCED}
+	EndGlobalSection
+EndGlobal
