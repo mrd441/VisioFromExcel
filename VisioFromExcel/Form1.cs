@@ -12,6 +12,16 @@ namespace VisioFromExcel
 {
     public partial class Form1 : Form
     {
+        public class Connection
+        {
+            public Connection Parent { get; set; }
+            public String Name { get; set; }
+            public int clients { get; set; }
+            public List<Connection> Children { get; set; }
+
+        }
+
+
         public Form1()
         {
             InitializeComponent();
@@ -29,24 +39,16 @@ namespace VisioFromExcel
             {
                 if (file.Contains(".kml"))
                 {
-                    string fileName = file;
-                    string filePath = "";
+                    string aFileName = file;
+                    string aFilePath = "";
                     int slashPos = file.LastIndexOf('\\');
                     if (slashPos != -1)
                     {
-                        fileName = file.Substring(slashPos + 1, file.Length - slashPos - 1);
-                        filePath = file.Substring(0, slashPos);
+                        aFileName = file.Substring(slashPos + 1, file.Length - slashPos - 1);
+                        aFilePath = file.Substring(0, slashPos);
                     }
-                    fileListElement fle = new fileListElement();
-                    fle.fileName = fileName;
-                    fle.filePath = filePath;
-                    if (!fileList.Contains(fle))
-                    {
-                        fileList.Add(fle);
-                        LogTextEvent(Color.Black, "Добавлен файл " + file);
-                    }
-                    else
-                        LogTextEvent(Color.Red, "Файл с таким название уже добавлен: " + file);
+                    fileName.Text = aFileName;
+                    LogTextEvent(Color.Black, "Добавлен файл " + file);                    
                 }
                 else
                     LogTextEvent(Color.Red, "Расширение файла должно быть KLM: " + file);
