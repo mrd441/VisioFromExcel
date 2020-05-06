@@ -14,13 +14,38 @@ namespace VisioFromExcel
     {
         public class Connection
         {
-            public Connection Parent { get; set; }
+            public Connection(string aName)
+            {
+                this.Children = new List<Connection>();
+                this.Name = aName;
+            }
+            public Connection Parent { get; }
             public String Name { get; set; }
             public int clients { get; set; }
             public List<Connection> Children { get; set; }
+            public bool IsRoot => Parent == null;
+            public bool IsLeaf => Children.Count == 0;
 
+            public bool AddChild(string _name, Connection _newChild)
+            {
+                Console.WriteLine(Name);
+                if (Name == _name)
+                {
+                    Children.Add(_newChild);
+                    return true;
+                }
+                foreach (Connection child in Children)
+                {
+                    if (child.AddChild(_name, _newChild)==true)
+                        return true;
+                }
+                return false;
+            }
         }
 
+        Connection mainNode;
+        Dictionary<string, int> _routes;
+        int maxNodes;
 
         public Form1()
         {
@@ -48,7 +73,7 @@ namespace VisioFromExcel
                         aFilePath = file.Substring(0, slashPos);
                     }
                     fileName.Text = aFileName;
-                    LogTextEvent(Color.Black, "Добавлен файл " + file);                    
+                    LogTextEvent(Color.Black, "Добавлен файл " + file);
                 }
                 else
                     LogTextEvent(Color.Red, "Расширение файла должно быть KLM: " + file);
@@ -84,6 +109,62 @@ namespace VisioFromExcel
                 TextEventLog.AppendText(nDateTime + EventText + System.Environment.NewLine);
                 TextEventLog.ScrollToCaret();
             }
+        }
+
+        private void Run_Click(object sender, EventArgs e)
+        {
+            _routes = new Dictionary<string, int>();
+
+            foreach (DataGridViewRow row in routes.Rows)
+                if (row.Cells[0].Value != null & row.Cells[1].Value != null)
+                    _routes.Add(row.Cells[0].Value.ToString(), Convert.ToInt32(row.Cells[1].Value));
+
+            mainNode = new Connection("root");
+            generageTree("root", 0, Convert.ToInt32(mainLine.Text));
+
+            Connection rootNode = new Connection("root");
+            string parentName = "root";
+            Connection newCon;
+            ref Connection currentCon = ref rootNode;
+            int nodeReservedCount = Convert.ToInt32(mainLine.Text);
+            for (int i = 1; i <= Convert.ToInt32(mainLine.Text); i++)
+            {
+                string newNodeName = i.ToString();
+                newCon = new Connection(newNodeName);                
+                rootNode.AddChild(parentName, newCon);
+                parentName = newNodeName;
+                if (_routes.TryGetValue(parentName, out int childCount))
+                {
+                    string innerParentName = parentName;
+                    for (int j = 1; j <= childCount; j++)
+                    {
+                        string innerNodeName = (nodeReservedCount + j).ToString();
+                        newCon = new Connection(innerNodeName);
+                        rootNode.AddChild(innerParentName, newCon);
+                        innerParentName = innerNodeName;
+                    }
+                    nodeReservedCount = nodeReservedCount + childCount;
+                }
+            }
+        }
+        private void generageTree( string parentName, int nodeReservedCount, int depth)
+        {
+            maxNodes = maxNodes + depth;
+            for (int i = 1; i <= depth; i++)
+            {
+                string innerNodeName = (nodeReservedCount + i).ToString();
+                Connection newCon = new Connection(innerNodeName);
+                mainNode.AddChild(parentName, newCon);
+                parentName = innerNodeName;
+                if (_routes.TryGetValue(innerNodeName, out int aDepth))
+                {
+                    generageTree(innerNodeName, maxNodes, aDepth);
+                }
+            }            
+        }
+        private void generateVisio(Connection treeNode)
+        {
+            
         }
     }
 }
