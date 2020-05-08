@@ -53,18 +53,20 @@
             this.label11 = new System.Windows.Forms.Label();
             this.ankers = new System.Windows.Forms.TextBox();
             this.routes = new System.Windows.Forms.DataGridView();
+            this.lineType = new System.Windows.Forms.DataGridView();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.Run = new System.Windows.Forms.Button();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Count = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.lineType = new System.Windows.Forms.DataGridView();
+            this.saveButton = new System.Windows.Forms.Button();
+            this.loadButton = new System.Windows.Forms.Button();
             this.type = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.from = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.to = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.Run = new System.Windows.Forms.Button();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.routes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.lineType)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -79,7 +81,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.logBox.Location = new System.Drawing.Point(0, 293);
             this.logBox.Name = "logBox";
-            this.logBox.Size = new System.Drawing.Size(879, 69);
+            this.logBox.Size = new System.Drawing.Size(884, 178);
             this.logBox.TabIndex = 0;
             this.logBox.Text = "";
             // 
@@ -94,14 +96,14 @@
             // 
             this.make.Location = new System.Drawing.Point(104, 54);
             this.make.Name = "make";
-            this.make.Size = new System.Drawing.Size(100, 20);
+            this.make.Size = new System.Drawing.Size(99, 20);
             this.make.TabIndex = 2;
             // 
             // makeDate
             // 
             this.makeDate.Location = new System.Drawing.Point(248, 54);
             this.makeDate.Name = "makeDate";
-            this.makeDate.Size = new System.Drawing.Size(52, 20);
+            this.makeDate.Size = new System.Drawing.Size(67, 20);
             this.makeDate.TabIndex = 3;
             // 
             // chekedM
@@ -115,14 +117,14 @@
             // 
             this.chekedDate.Location = new System.Drawing.Point(248, 80);
             this.chekedDate.Name = "chekedDate";
-            this.chekedDate.Size = new System.Drawing.Size(52, 20);
+            this.chekedDate.Size = new System.Drawing.Size(67, 20);
             this.chekedDate.TabIndex = 5;
             // 
             // city
             // 
-            this.city.Location = new System.Drawing.Point(400, 54);
+            this.city.Location = new System.Drawing.Point(415, 54);
             this.city.Name = "city";
-            this.city.Size = new System.Drawing.Size(196, 20);
+            this.city.Size = new System.Drawing.Size(181, 20);
             this.city.TabIndex = 6;
             // 
             // tpType
@@ -133,9 +135,9 @@
             "Мачтовая",
             "Закрытая",
             "Комплектная"});
-            this.tpType.Location = new System.Drawing.Point(400, 80);
+            this.tpType.Location = new System.Drawing.Point(415, 80);
             this.tpType.Name = "tpType";
-            this.tpType.Size = new System.Drawing.Size(196, 21);
+            this.tpType.Size = new System.Drawing.Size(181, 21);
             this.tpType.TabIndex = 7;
             // 
             // label1
@@ -186,7 +188,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(306, 83);
+            this.label6.Location = new System.Drawing.Point(321, 83);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(88, 13);
             this.label6.TabIndex = 13;
@@ -195,7 +197,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(333, 57);
+            this.label7.Location = new System.Drawing.Point(348, 57);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(61, 13);
             this.label7.TabIndex = 14;
@@ -220,6 +222,7 @@
             // radioButtonMetal
             // 
             this.radioButtonMetal.AutoSize = true;
+            this.radioButtonMetal.Checked = true;
             this.radioButtonMetal.Location = new System.Drawing.Point(104, 54);
             this.radioButtonMetal.Name = "radioButtonMetal";
             this.radioButtonMetal.Size = new System.Drawing.Size(45, 17);
@@ -235,7 +238,6 @@
             this.radioButtonWood.Name = "radioButtonWood";
             this.radioButtonWood.Size = new System.Drawing.Size(90, 17);
             this.radioButtonWood.TabIndex = 18;
-            this.radioButtonWood.TabStop = true;
             this.radioButtonWood.Text = "Деревянные";
             this.radioButtonWood.UseVisualStyleBackColor = true;
             // 
@@ -288,19 +290,9 @@
             this.Count});
             this.routes.Location = new System.Drawing.Point(609, 27);
             this.routes.Name = "routes";
-            this.routes.Size = new System.Drawing.Size(224, 100);
+            this.routes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.routes.Size = new System.Drawing.Size(237, 100);
             this.routes.TabIndex = 24;
-            // 
-            // id
-            // 
-            this.id.HeaderText = "№ Опоры";
-            this.id.Name = "id";
-            this.id.Width = 80;
-            // 
-            // Count
-            // 
-            this.Count.HeaderText = "Кол-во опор";
-            this.Count.Name = "Count";
             // 
             // lineType
             // 
@@ -311,30 +303,9 @@
             this.to});
             this.lineType.Location = new System.Drawing.Point(260, 27);
             this.lineType.Name = "lineType";
+            this.lineType.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.lineType.Size = new System.Drawing.Size(343, 100);
             this.lineType.TabIndex = 25;
-            // 
-            // type
-            // 
-            this.type.HeaderText = "Тип линии";
-            this.type.Items.AddRange(new object[] {
-            "2АС-16",
-            "СИП",
-            "4АС-50"});
-            this.type.Name = "type";
-            this.type.Width = 200;
-            // 
-            // from
-            // 
-            this.from.HeaderText = "От";
-            this.from.Name = "from";
-            this.from.Width = 50;
-            // 
-            // to
-            // 
-            this.to.HeaderText = "До";
-            this.to.Name = "to";
-            this.to.Width = 50;
             // 
             // groupBox1
             // 
@@ -376,19 +347,10 @@
             this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Location = new System.Drawing.Point(15, 139);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(852, 148);
+            this.groupBox2.Size = new System.Drawing.Size(857, 148);
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Схема";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(681, 11);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(73, 13);
-            this.label12.TabIndex = 26;
-            this.label12.Text = "Ответвления";
             // 
             // label13
             // 
@@ -398,6 +360,15 @@
             this.label13.Size = new System.Drawing.Size(59, 13);
             this.label13.TabIndex = 28;
             this.label13.Text = "Тип линий";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(681, 11);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(73, 13);
+            this.label12.TabIndex = 26;
+            this.label12.Text = "Ответвления";
             // 
             // Run
             // 
@@ -411,24 +382,82 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.loadButton);
+            this.groupBox3.Controls.Add(this.saveButton);
             this.groupBox3.Controls.Add(this.Run);
             this.groupBox3.Location = new System.Drawing.Point(631, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(236, 121);
+            this.groupBox3.Size = new System.Drawing.Size(241, 121);
             this.groupBox3.TabIndex = 29;
             this.groupBox3.TabStop = false;
+            // 
+            // id
+            // 
+            this.id.HeaderText = "№ Опоры";
+            this.id.Name = "id";
+            this.id.Width = 80;
+            // 
+            // Count
+            // 
+            this.Count.HeaderText = "Кол-во опор";
+            this.Count.Name = "Count";
+            this.Count.Width = 91;
+            // 
+            // saveButton
+            // 
+            this.saveButton.Location = new System.Drawing.Point(155, 20);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(75, 37);
+            this.saveButton.TabIndex = 29;
+            this.saveButton.Text = "Сохранить настроки";
+            this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            // 
+            // loadButton
+            // 
+            this.loadButton.Location = new System.Drawing.Point(155, 63);
+            this.loadButton.Name = "loadButton";
+            this.loadButton.Size = new System.Drawing.Size(75, 37);
+            this.loadButton.TabIndex = 30;
+            this.loadButton.Text = "Загрузить настроки";
+            this.loadButton.UseVisualStyleBackColor = true;
+            this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
+            // 
+            // type
+            // 
+            this.type.HeaderText = "Тип линии";
+            this.type.Items.AddRange(new object[] {
+            "2АС-16",
+            "2АС-25",
+            "4АС-16",
+            "4АС-25",
+            "СИП"});
+            this.type.Name = "type";
+            this.type.Width = 180;
+            // 
+            // from
+            // 
+            this.from.HeaderText = "От";
+            this.from.Name = "from";
+            this.from.Width = 50;
+            // 
+            // to
+            // 
+            this.to.HeaderText = "До";
+            this.to.Name = "to";
+            this.to.Width = 50;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(879, 362);
+            this.ClientSize = new System.Drawing.Size(884, 471);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.logBox);
-            this.MaximumSize = new System.Drawing.Size(895, 800);
-            this.MinimumSize = new System.Drawing.Size(895, 400);
+            this.MaximumSize = new System.Drawing.Size(900, 800);
+            this.MinimumSize = new System.Drawing.Size(900, 400);
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.routes)).EndInit();
@@ -469,18 +498,20 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox ankers;
         private System.Windows.Forms.DataGridView routes;
-        private System.Windows.Forms.DataGridViewTextBoxColumn id;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Count;
         private System.Windows.Forms.DataGridView lineType;
-        private System.Windows.Forms.DataGridViewComboBoxColumn type;
-        private System.Windows.Forms.DataGridViewTextBoxColumn from;
-        private System.Windows.Forms.DataGridViewTextBoxColumn to;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Button Run;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn id;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Count;
+        private System.Windows.Forms.Button loadButton;
+        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.DataGridViewComboBoxColumn type;
+        private System.Windows.Forms.DataGridViewTextBoxColumn from;
+        private System.Windows.Forms.DataGridViewTextBoxColumn to;
     }
 }
 
