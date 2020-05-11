@@ -70,8 +70,8 @@ namespace VisioFromExcel
             this.AllowDrop = true;
             this.DragEnter += new DragEventHandler(Form1_DragEnter);
             this.DragDrop += new DragEventHandler(Form1_DragDrop);
-            makeDate.Text = DateTime.Today.ToString("dd.MM.yyyy");
-            chekedDate.Text = DateTime.Today.ToString("dd.MM.yyyy");
+            makeDate.Text = DateTime.Today.ToString("dd.MM.yy");
+            chekedDate.Text = DateTime.Today.ToString("dd.MM.yy");
             dirArr = new int[3,4]  {{0,1,2,3},
                                     {1,0,0,1},
                                     {2,3,3,2}};
@@ -272,6 +272,7 @@ namespace VisioFromExcel
         private void generateVisio(Connection treeNode)
         {
             visapp = new IVisio.InvisibleApp();
+            visapp.AlertResponse = 7; //autoAnswer NO on any alert
             visapp.Visible = false;
             bool errorCatch = false;
             try
@@ -391,37 +392,56 @@ namespace VisioFromExcel
             }
             else
             {
-                calculateNewCoordinates(ref X, ref Y, _direction);
+                //calculateNewCoordinates(ref X, ref Y, _direction);
                 string materialTypePrefix = node.IsAnker ? "ank_" : "";
                 string materialType = radioButtonMetal.Checked ? materialTypePrefix + "jb" : materialTypePrefix + "d";
+               
+
+                string parentName = node.ParentName;
+                string lineType = (parentName == "0") ? node.lineType + Environment.NewLine + "Ф1" : node.lineType;// + Environment.NewLine
+                aParentShape = page.Shapes.get_ItemU(parentName);
+
                 aMaster = shapes.get_ItemU(materialType);
+                calculateNewCoordinates(ref X, ref Y, _direction, aMaster.Shapes[1], aParentShape);
                 aShape = page.Drop(aMaster, X, Y);
                 aShape.Name = node.Name;
                 aShape.Text = node.Name;
 
-                string parentName = (node.ParentName == "0") ? "0" : node.ParentName;
-                string lineType = (node.ParentName == "0") ? node.lineType + "Ф1" : node.lineType;// + Environment.NewLine
-                aParentShape = page.Shapes.get_ItemU(parentName);
+                
+
                 aMaster = shapes.get_ItemU(@"Dynamic connector");
                 aMaster.Shapes[1].Text = lineType;
                 aMaster.Shapes[1].Characters.CharProps[7] = 6;
                 aMaster.Shapes[1].Characters.CharProps[0] = 23;
+                if (parentName == "0")
+                    aMaster.Shapes[1].CellsU["TextBkgnd"].FormulaForceU = "0";
+                else
+                    aMaster.Shapes[1].CellsU["TextBkgnd"].FormulaForceU = "2";
                 aMaster.Shapes[1].CellsU["ShapeRouteStyle"].FormulaForceU = "16";
                 aMaster.Shapes[1].CellsU["ConLineRouteExt"].FormulaForceU = "1";
                 aMaster.Shapes[1].CellsU["TxtAngle"].FormulaForceU = "ANGLEALONGPATH(Geometry1.Path,1)+IF(COS(ANGLEALONGPATH(Geometry1.Path,1))>=0,0,180°)";
+
+                
                 aShape.AutoConnect(aParentShape, IVisio.VisAutoConnectDir.visAutoConnectDirNone, aMaster.Shapes[1]);
 
 
                 for (int i = 0; i < node.clients.Count; i++)
                 {
-                    calculateNewClientCoordinates(X, Y, out double cX, out double cY, i);
+                    calculateNewClientCoordinates(X, Y, out double cX, out double cY, i, aShape);
                     aMaster = shapes.get_ItemU(@"unit");
                     IVisio.Shape clietShape = page.Drop(aMaster, cX, cY);
                     clietShape.Name = "client_" + node.clients[i].Item1;
                     clietShape.Text = node.clients[i].Item1;
                     aMaster = shapes.get_ItemU(@"Dynamic connector");
-                    aMaster.Shapes[1].Text = "";
-                                        
+                    if (node.clients[i].Item2)
+                    {
+                        aMaster.Shapes[1].Characters.CharProps[7] = 4;
+                        aMaster.Shapes[1].CellsU["TextBkgnd"].FormulaForceU = "0";
+                        aMaster.Shapes[1].Text = "|||";
+                    }
+                    else
+                        aMaster.Shapes[1].Text = "";
+
                     clietShape.AutoConnect(aShape, IVisio.VisAutoConnectDir.visAutoConnectDirNone, aMaster.Shapes[1]);
                 }
             }
@@ -433,28 +453,41 @@ namespace VisioFromExcel
             }                
         }
 
-        private void calculateNewCoordinates(ref double x, ref double y, int direction)
+        private void calculateNewCoordinates(ref double x, ref double y, int direction, IVisio.Shape shape, IVisio.Shape parentShape)
         {
+            double w1 = shape.CellsU["angle"].ResultIU ==0 ? shape.CellsU["width"].ResultIU : shape.CellsU["height"].ResultIU;
+            double w2 = parentShape.CellsU["angle"].ResultIU == 0 ? parentShape.CellsU["width"].ResultIU : parentShape.CellsU["height"].ResultIU;
+            
+            double h1 = shape.CellsU["angle"].ResultIU == 0 ? shape.CellsU["height"].ResultIU : shape.CellsU["width"].ResultIU;
+            double h2 = parentShape.CellsU["angle"].ResultIU == 0 ? parentShape.CellsU["height"].ResultIU : parentShape.CellsU["width"].ResultIU;
+
             double shapeDiam = 0.15748;
+            double xFac = 2;
+            double yFac = 2;
+            
             switch (direction)
             {
                 case 0:
-                    y = y - (shapeDiam * 3.5);
+                    y = y - (shapeDiam * yFac + (h1 / 2 + h2 / 2));
                     break;
                 case 1:
-                    x = x - (shapeDiam * 3.5);
+                    x = x - (shapeDiam * xFac + (w1 / 2 + w2 / 2));
                     break;
                 case 2:
-                    x = x + (shapeDiam * 3.5);
+                    x = x + (shapeDiam * xFac + (w1 / 2 + w2 / 2));
                     break;
                 case 3:
-                    y = y + (shapeDiam * 3.5);
+                    y = y + (shapeDiam * yFac + (h1 / 2 + h2 / 2));
                     break;
             }
         }
 
-        private void calculateNewClientCoordinates(double x, double y, out double cX, out double cY, int direction)
+        private void calculateNewClientCoordinates(double x, double y, out double cX, out double cY, int direction, IVisio.Shape shape)
         {
+            double w1 = shape.CellsU["angle"].ResultIU == 0 ? shape.CellsU["width"].ResultIU : shape.CellsU["height"].ResultIU;
+            //double h1 = shape.CellsU["angle"].ResultIU == 0 ? shape.CellsU["height"].ResultIU : shape.CellsU["width"].ResultIU;
+
+            double shapeDiam = 0.15748;
             double xDif = 0.24;
             double yDif = 0.14;
             cY = y;
@@ -462,89 +495,111 @@ namespace VisioFromExcel
             switch (direction)
             {
                 case 0:
-                    cY = y + yDif;
-                    cX = x + xDif;
+                    cY = y + (yDif);
+                    cX = x + (xDif + (w1 - shapeDiam)/2);
                     break;
                 case 1:
-                    cY = y + yDif;
-                    cX = x - xDif;
+                    cY = y + (yDif);
+                    cX = x - (xDif + (w1 - shapeDiam)/2);
                     break;
                 case 2:
-                    cY = y - yDif;
-                    cX = x - xDif;
+                    cY = y - (yDif);
+                    cX = x - (xDif + (w1 - shapeDiam)/2);
                     break;
                 case 3:
-                    cY = y - yDif;
-                    cX = x + xDif;
+                    cY = y - (yDif);
+                    cX = x + (xDif + (w1 - shapeDiam)/2);
                     break;
             }
         }
         private void saveButton_Click(object sender, EventArgs e)
         {
-            string _folder = Directory.GetCurrentDirectory();
-            string _fileName = "\\settings.txt";
-            string fullPath = _folder + _fileName;
-            using (StreamWriter writer = File.CreateText(fullPath))
+            try
             {
-                writer.WriteLine(fileName.Text);
-                writer.WriteLine(mainLine.Text);
-                writer.WriteLine(clients.Text);
-                writer.WriteLine(ankers.Text);
-                writer.WriteLine(tpType.Text);
-                string lineTypeString = "";
-                foreach (DataGridViewRow row in lineType.Rows)
-                    if (!row.IsNewRow)
-                    { 
-                        lineTypeString += (row.Cells[0].Value == null ? "" : row.Cells[0].Value.ToString()) + "*";
-                        lineTypeString += (row.Cells[1].Value == null ? "" : row.Cells[1].Value.ToString()) + "*";
-                        lineTypeString += (row.Cells[2].Value == null ? "" : row.Cells[2].Value.ToString()) + ";";
-                    }
-                writer.WriteLine(lineTypeString);
-                
-                string routesString = "";
-                foreach (DataGridViewRow row in routes.Rows)
-                    if (!row.IsNewRow)
-                    {
-                        routesString += (row.Cells[0].Value == null ? "" : row.Cells[0].Value.ToString()) + "*";
-                        routesString += (row.Cells[1].Value == null ? "" : row.Cells[1].Value.ToString()) + ";";
-                    }
-                
-                writer.WriteLine(routesString);
+                string _folder = Directory.GetCurrentDirectory();
+                string _fileName = "\\settings.txt";
+                string fullPath = _folder + _fileName;
+                using (StreamWriter writer = File.CreateText(fullPath))
+                {
+                    writer.WriteLine(fileName.Text);
+                    writer.WriteLine(make.Text);
+                    writer.WriteLine(chekedM.Text);
+                    writer.WriteLine(mainLine.Text);
+                    writer.WriteLine(clients.Text);
+                    writer.WriteLine(ankers.Text);
+                    writer.WriteLine(tpType.Text);
+                    string lineTypeString = "";
+                    foreach (DataGridViewRow row in lineType.Rows)
+                        if (!row.IsNewRow)
+                        {
+                            lineTypeString += (row.Cells[0].Value == null ? "" : row.Cells[0].Value.ToString()) + "*";
+                            lineTypeString += (row.Cells[1].Value == null ? "" : row.Cells[1].Value.ToString()) + "*";
+                            lineTypeString += (row.Cells[2].Value == null ? "" : row.Cells[2].Value.ToString()) + ";";
+                        }
+                    writer.WriteLine(lineTypeString);
+
+                    string routesString = "";
+                    foreach (DataGridViewRow row in routes.Rows)
+                        if (!row.IsNewRow)
+                        {
+                            routesString += (row.Cells[0].Value == null ? "" : row.Cells[0].Value.ToString()) + "*";
+                            routesString += (row.Cells[1].Value == null ? "" : row.Cells[1].Value.ToString()) + ";";
+                        }
+
+                    writer.WriteLine(routesString);
+                }
+                LogTextEvent(System.Drawing.Color.Black, "Настройки успешно сохранены");
+            }
+            catch (Exception ex)
+            {
+                LogTextEvent(System.Drawing.Color.Red, "Ошибка сохранения настроек. " + ex.Message);
             }
         }
 
         private void loadButton_Click(object sender, EventArgs e)
         {
-            string _folder = Directory.GetCurrentDirectory();
-            string _fileName = "\\settings.txt";
-            string fullPath = _folder + _fileName;
-            using (StreamReader reader = new StreamReader(fullPath))
+            try
             {
-                fileName.Text = reader.ReadLine();
-                mainLine.Text = reader.ReadLine();
-                clients.Text = reader.ReadLine();
-                ankers.Text = reader.ReadLine();
-                tpType.Text = reader.ReadLine();
-                lineType.Rows.Clear();
-                string lineTypeString = reader.ReadLine();
-                foreach (string lineTypeRow in lineTypeString.Split(';'))
+                string _folder = Directory.GetCurrentDirectory();
+                string _fileName = "\\settings.txt";
+                string fullPath = _folder + _fileName;
+                if (!File.Exists(fullPath))
+                    throw new Exception("Не найден файл с настройками.");
+                using (StreamReader reader = new StreamReader(fullPath))
                 {
-                    if (lineTypeRow != "")
+                    fileName.Text = reader.ReadLine();
+                    make.Text = reader.ReadLine();
+                    chekedM.Text = reader.ReadLine();
+                    mainLine.Text = reader.ReadLine();
+                    clients.Text = reader.ReadLine();
+                    ankers.Text = reader.ReadLine();
+                    tpType.Text = reader.ReadLine();
+                    lineType.Rows.Clear();
+                    string lineTypeString = reader.ReadLine();
+                    foreach (string lineTypeRow in lineTypeString.Split(';'))
                     {
-                        string[] lineTypeRowValues = lineTypeRow.Split('*');
-                        lineType.Rows.Add( new string[] { lineTypeRowValues[0], lineTypeRowValues[1], lineTypeRowValues[2] });
+                        if (lineTypeRow != "")
+                        {
+                            string[] lineTypeRowValues = lineTypeRow.Split('*');
+                            lineType.Rows.Add(new string[] { lineTypeRowValues[0], lineTypeRowValues[1], lineTypeRowValues[2] });
+                        }
+                    }
+                    routes.Rows.Clear();
+                    string routesString = reader.ReadLine();
+                    foreach (string routesRow in routesString.Split(';'))
+                    {
+                        if (routesRow != "")
+                        {
+                            string[] routesValues = routesRow.Split('*');
+                            routes.Rows.Add(new string[] { routesValues[0], routesValues[1] });
+                        }
                     }
                 }
-                routes.Rows.Clear();
-                string routesString = reader.ReadLine();
-                foreach (string routesRow in routesString.Split(';'))
-                {
-                    if (routesRow != "")
-                    {
-                        string[] routesValues = routesRow.Split('*');
-                        routes.Rows.Add(new string[] { routesValues[0], routesValues[1] });
-                    }
-                }
+                LogTextEvent(System.Drawing.Color.Black, "Настройки успешно загружены");
+            }
+            catch (Exception ex)
+            {
+                LogTextEvent(System.Drawing.Color.Red, "Ошибка загрузки настроек. "+ex.Message);
             }
         }
     }
